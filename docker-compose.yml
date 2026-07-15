@@ -1,0 +1,32 @@
+version: "3.9"
+
+# Local dev convenience only. Production uses hosted Supabase (not local Postgres),
+# Vercel (frontend), and Render/Fly/Railway (backend). This compose file is useful
+# if you want to develop against a local Postgres+PostGIS before pointing at Supabase.
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: threadwork
+      POSTGRES_PASSWORD: threadwork
+      POSTGRES_DB: threadwork
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+
+volumes:
+  pgdata:

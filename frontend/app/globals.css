@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-cream: 246 242 234;
+  --color-cream-dim: 237 231 218;
+  --color-ink: 28 26 23;
+  --color-ink-light: 107 99 87;
+  --color-paper: 255 253 249;
+  --color-line: 216 208 192;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-cream: 23 21 18;
+  --color-cream-dim: 44 42 37;
+  --color-ink: 237 231 218;
+  --color-ink-light: 166 156 140;
+  --color-paper: 33 31 27;
+  --color-line: 58 55 47;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
