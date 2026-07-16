@@ -17,6 +17,12 @@ app = FastAPI(title=settings.APP_NAME)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_cors_origins(),
+    # Vercel generates a new random preview URL on every deployment
+    # (e.g. business-collaboration-and-partnership-finder-<hash>-snmak2.vercel.app).
+    # Rather than chasing every new URL manually in FRONTEND_ORIGINS, allow any
+    # subdomain under this Vercel account by pattern. Tighten this before a real
+    # production launch if stricter origin control is needed.
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
