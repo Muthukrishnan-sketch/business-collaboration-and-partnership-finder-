@@ -45,8 +45,23 @@ class BusinessBase(BaseModel):
     phone: Optional[str] = None
 
 
-class BusinessCreate(BusinessBase):
-    pass
+class BusinessCreate(BaseModel):
+    """
+    Input schema for creating a business. Takes a Google Maps link instead of
+    raw lat/lng — the backend resolves the link to coordinates itself, so
+    business owners never need to look up or type coordinates manually.
+    """
+
+    name: str
+    category: BusinessCategory
+    secondary_categories: list[BusinessCategory] = Field(default_factory=list)
+    description: Optional[str] = None
+    google_maps_url: str
+    address: Optional[str] = None
+    city: Optional[str] = None
+    instagram_handle: Optional[str] = None
+    website: Optional[str] = None
+    phone: Optional[str] = None
 
 
 class BusinessOut(BusinessBase):
@@ -90,7 +105,7 @@ class ConnectionOut(BaseModel):
 
 class ProposalGenerateIn(BaseModel):
     connection_id: UUID
-    context: Optional[str] = None  # extra context to steer the AI proposal
+    context: Optional[str] = None
 
 
 class ProposalOut(BaseModel):

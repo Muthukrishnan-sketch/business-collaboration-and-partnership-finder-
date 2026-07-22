@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from app.core.supabase_client import get_supabase
 from app.models.schemas import BusinessCreate, BusinessOut
+from app.services.geo import extract_lat_lng_from_google_maps_url
 
 router = APIRouter(prefix="/businesses", tags=["businesses"])
 
@@ -15,6 +16,11 @@ def create_business(payload: BusinessCreate, owner_user_id: str = Query(...)):
     session (Clerk/Auth.js) — passed as a query param here for scaffold simplicity;
     replace with a proper auth dependency before shipping.
     """
+    try:
+        lat, lng = extract_lat_lng_from_google_maps_url(payload.google_maps_url)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
     supabase = get_supabase()
     row = {
         "owner_user_id": owner_user_id,
@@ -22,7 +28,7 @@ def create_business(payload: BusinessCreate, owner_user_id: str = Query(...)):
         "category": payload.category.value,
         "secondary_categories": [c.value for c in payload.secondary_categories],
         "description": payload.description,
-        "location": f"POINT({payload.lng} {payload.lat})",
+        "location": f"POINT({lng} {lat})",
         "address": payload.address,
         "city": payload.city,
         "instagram_handle": payload.instagram_handle,
@@ -68,10 +74,6 @@ def list_businesses(category: str | None = None, city: str | None = None, limit:
 
 @router.patch("/{business_id}/verify", response_model=BusinessOut)
 def verify_business(business_id: UUID, verified: bool = True):
-    """
-    Admin approval action. NOTE: not yet restricted to admin users specifically —
-    same open-trust model as the rest of the scaffold until backend auth is added.
-    """
     supabase = get_supabase()
     result = (
         supabase.table("businesses").update({"is_verified": verified}).eq("id", str(business_id)).execute()

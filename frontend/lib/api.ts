@@ -13,21 +13,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const CATEGORIES = [
-  "photography",
-  "videography",
-  "catering",
-  "decor",
-  "makeup_artist",
-  "venue",
-  "florist",
-  "gym",
-  "nutritionist",
-  "physiotherapist",
-  "event_planner",
-  "dj_music",
-  "bakery",
-  "salon",
-  "other",
+  "photography", "videography", "catering", "decor", "makeup_artist",
+  "venue", "florist", "gym", "nutritionist", "physiotherapist",
+  "event_planner", "dj_music", "bakery", "salon", "other",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
@@ -54,8 +42,7 @@ export type BusinessCreateInput = {
   category: Category;
   secondary_categories?: Category[];
   description?: string;
-  lat: number;
-  lng: number;
+  google_maps_url: string;
   address?: string;
   city?: string;
   instagram_handle?: string;
@@ -140,6 +127,14 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  verifyBusiness: (businessId: string, verified = true) =>
+    request<Business>(`/businesses/${businessId}/verify?verified=${verified}`, {
+      method: "PATCH",
+    }),
+
+  deleteBusiness: (businessId: string) =>
+    request(`/businesses/${businessId}`, { method: "DELETE" }),
+
   sendConnectionRequest: (requesterId: string, recipientId: string, message?: string) =>
     request<Connection>(`/connections?requester_id=${requesterId}`, {
       method: "POST",
@@ -171,14 +166,6 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ sender_business_id: senderBusinessId, content }),
     }),
-
-  verifyBusiness: (businessId: string, verified = true) =>
-    request<Business>(`/businesses/${businessId}/verify?verified=${verified}`, {
-      method: "PATCH",
-    }),
-
-  deleteBusiness: (businessId: string) =>
-    request(`/businesses/${businessId}`, { method: "DELETE" }),
 
   getNotifications: (businessId: string, unreadOnly = false) =>
     request<Notification[]>(
