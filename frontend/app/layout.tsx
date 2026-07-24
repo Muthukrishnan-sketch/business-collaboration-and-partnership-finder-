@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import { ActiveBusinessProvider } from "@/lib/activeBusiness";
 import { ThemeProvider } from "@/lib/theme";
 import { NavBar } from "@/components/NavBar";
+import { InteractiveBackground } from "@/components/InteractiveBackground";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -34,12 +35,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${fraunces.variable} ${inter.variable} ${ibmPlexMono.variable} font-body bg-cream text-ink`}
+          className={`${fraunces.variable} ${inter.variable} ${ibmPlexMono.variable} font-body bg-cream text-ink relative`}
         >
           <ThemeProvider>
             <ActiveBusinessProvider>
-              <NavBar />
-              {children}
+              <InteractiveBackground />
+              <div className="relative z-10">
+                <NavBar />
+                {children}
+              </div>
             </ActiveBusinessProvider>
           </ThemeProvider>
         </body>
