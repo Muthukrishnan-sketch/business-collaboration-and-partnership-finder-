@@ -41,17 +41,21 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen px-6 py-12 md:px-16 max-w-4xl mx-auto">
+    // min-w-0 on the grid + columns below: flex/grid items refuse to shrink
+    // below their content's natural width by default, which was pushing
+    // this page wider than the phone screen despite overflow-hidden on
+    // individual cards. This is the standard fix for that class of bug.
+    <main className="min-h-screen px-6 py-12 md:px-16 max-w-4xl mx-auto min-w-0">
       <header className="mb-10">
         <p className="font-mono text-xs uppercase tracking-widest text-moss mb-2">Threadwork</p>
         <h1 className="font-display text-4xl leading-tight">Admin</h1>
         <p className="text-ink-light mt-2">Create business profiles and manage verification.</p>
       </header>
 
-      <div className="grid md:grid-cols-2 gap-12">
-        <div>
+      <div className="grid md:grid-cols-2 gap-12 min-w-0">
+        <div className="min-w-0">
           <h2 className="font-mono text-xs uppercase tracking-widest text-ink-light mb-4">Add a business</h2>
-          <form onSubmit={handleSubmit} className="space-y-5 bg-paper border border-line rounded-xl p-5">
+          <form onSubmit={handleSubmit} className="space-y-5 bg-paper border border-line rounded-xl p-5 min-w-0">
             <p className="text-xs font-mono uppercase tracking-widest text-ink-light">
               Signed in as {user?.primaryEmailAddress?.emailAddress ?? "…"}
             </p>
@@ -102,7 +106,7 @@ export default function AdminPage() {
           </form>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="font-mono text-xs uppercase tracking-widest text-ink-light mb-4">
             Manage businesses ({businesses.length})
           </h2>
@@ -134,7 +138,7 @@ export default function AdminPage() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="block text-xs font-mono uppercase tracking-widest text-ink-light mb-1">{label}</span>
       {children}
     </label>
@@ -156,28 +160,31 @@ function BusinessRow({ business, onChange }: { business: Business; onChange: () 
   };
 
   return (
-    <div className="bg-paper border border-line rounded-xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+    <div className="bg-paper border border-line rounded-xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 min-w-0">
       <div className="h-3" style={{ background: color }} />
-      <div className="p-4 flex items-center justify-between gap-2">
-        <div>
-          <p className="text-sm font-medium">{business.name}</p>
-          <div className="flex items-center gap-2 mt-1">
+      {/* Stacks vertically below sm — name/badges on top, action buttons
+          below, instead of squeezing everything into one row that was
+          forcing the page wider than the phone screen. */}
+      <div className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+        <div className="min-w-0">
+          <p className="text-sm font-medium truncate">{business.name}</p>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <span
-              className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
+              className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full text-white shrink-0"
               style={{ background: color }}
             >
               {categoryLabel(business.category)}
             </span>
-            <span className={`text-[10px] font-mono uppercase tracking-widest ${business.is_verified ? "text-moss" : "text-terracotta-dark"}`}>
+            <span className={`text-[10px] font-mono uppercase tracking-widest shrink-0 ${business.is_verified ? "text-moss" : "text-terracotta-dark"}`}>
               {business.is_verified ? "Verified" : "Pending"}
             </span>
           </div>
         </div>
         <div className="flex gap-1.5 shrink-0">
-          <button onClick={toggleVerify} disabled={busy} className="text-[11px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border border-line hover:border-ink/40 disabled:opacity-50">
+          <button onClick={toggleVerify} disabled={busy} className="text-[11px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border border-line hover:border-ink/40 disabled:opacity-50 whitespace-nowrap">
             {business.is_verified ? "Unverify" : "Verify"}
           </button>
-          <button onClick={remove} disabled={busy} className="text-[11px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border border-terracotta text-terracotta-dark hover:bg-terracotta hover:text-cream disabled:opacity-50">
+          <button onClick={remove} disabled={busy} className="text-[11px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border border-terracotta text-terracotta-dark hover:bg-terracotta hover:text-cream disabled:opacity-50 whitespace-nowrap">
             Delete
           </button>
         </div>
