@@ -22,18 +22,22 @@
   --color-line: 58 55 47;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.15s ease, color 0.15s ease;
+  overflow-x: hidden;
 
-  /* Soft, subtle, brand-colored background — restrained on purpose, so it
-     doesn't compete with the card-based UI. Two faint warm/cool glows that
-     drift very slowly; pure CSS, no canvas, no animation-loop risk. */
+  /* Soft, subtle, brand-colored background. No `background-attachment: fixed`
+     — that property is unreliable on mobile browsers (especially iOS Safari)
+     and is the most likely cause of mobile layout/rendering issues. */
   background-color: rgb(var(--color-cream));
   background-image:
     radial-gradient(circle at 12% 8%, rgba(199, 93, 58, 0.07), transparent 42%),
     radial-gradient(circle at 88% 92%, rgba(92, 107, 79, 0.08), transparent 45%);
-  background-attachment: fixed;
   background-size: 140% 140%;
   animation: bg-drift 40s ease-in-out infinite alternate;
 }
